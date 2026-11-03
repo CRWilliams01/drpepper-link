@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opening Dr Pepper…</title>
+<meta property="og:title" content="Dr Pepper">
+<meta property="og:url" content="https://www.drpepper.com/">
+<style>
+  :root { --bg:#ffffff; --fg:#1d1d1d; --accent:#7a0019; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --fg:#f2f2f2; --accent:#d94a63; } }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,sans-serif; text-align:center; padding:24px; }
+  a.btn { display:inline-block; margin-top:16px; padding:14px 24px; border-radius:8px;
+          background:var(--accent); color:#fff; text-decoration:none; font-weight:600; }
+  p { max-width:34ch; line-height:1.5; }
+</style>
+</head>
+<body>
+<main>
+  <p id="msg">Opening drpepper.com in your browser…</p>
+  <a class="btn" id="go" href="https://www.drpepper.com/">Open drpepper.com</a>
+  <p id="tip" hidden>If it didn't open, tap the ••• menu at the top and choose “Open in browser.”</p>
+</main>
+<script>
+  var TARGET = "https://www.drpepper.com/";
+  var host = TARGET.replace(/^https?:\/\//, "");
+  var ua = navigator.userAgent || "";
+  var inApp = /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Messenger/i.test(ua);
+  var isAndroid = /Android/i.test(ua);
+  var isIOS = /iPhone|iPad|iPod/i.test(ua);
+  var go = document.getElementById("go");
+
+  if (!inApp) {
+    // Already in a normal browser — just go.
+    window.location.replace(TARGET);
+  } else if (isAndroid) {
+    // Android: hand off to the default browser via an intent URL.
+    var intent = "intent://" + host + "#Intent;scheme=https;S.browser_fallback_url=" +
+                 encodeURIComponent(TARGET) + ";end";
+    go.href = intent;
+    window.location.href = intent;
+  } else if (isIOS) {
+    // iOS: x-safari-https opens Safari on recent iOS versions; button is the fallback.
+    var safari = "x-safari-" + TARGET;
+    go.href = safari;
+    window.location.href = safari;
+  }
+  setTimeout(function () { document.getElementById("tip").hidden = false; }, 1500);
+</script>
+</body>
+</html>
